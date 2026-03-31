@@ -9,6 +9,13 @@ End-to-end data pipeline for processing employee data using Apache Airflow, Dock
 This project demonstrates a complete ETL (Extract, Transform, Load) pipeline for employee data.
 The system automates data ingestion, transformation, validation, and storage, and provides an interactive dashboard for data visualization.
 
+## 📸 Screenshots
+
+### Airflow Pipeline
+![Airflow]()
+
+### 📊 Dashboard UI
+![Dashboard](<img width="1280" height="744" alt="image" src="https://github.com/user-attachments/assets/4b2e61a1-8827-4a08-9297-c834aeb9ab76" />)
 ### 🔄 Pipeline Flow
 
 ```
