@@ -1,110 +1,171 @@
-# TP-6: Employee Data Pipeline
+# Employee ETL Pipeline
 
-## Project Structure
+End-to-end data pipeline for processing employee data using Apache Airflow, Docker, MySQL, and Streamlit.
+
+---
+
+## 📌 Overview
+
+This project demonstrates a complete ETL (Extract, Transform, Load) pipeline for employee data.
+The system automates data ingestion, transformation, validation, and storage, and provides an interactive dashboard for data visualization.
+
+### 🔄 Pipeline Flow
 
 ```
-tp6_employee_etl/
-├── docker-compose.yml          ← single file that runs everything
-├── requirements-airflow.txt    ← (reference only, auto-installed by compose)
-│
+Extract → Transform → Validate → Load
+```
+
+---
+
+## 🛠 Tech Stack
+
+* **Python** – data processing and pipeline logic
+* **Apache Airflow** – workflow orchestration
+* **Docker & Docker Compose** – containerized environment
+* **MySQL** – data storage
+* **Streamlit** – interactive dashboard
+
+---
+
+## 📁 Project Structure
+
+```
+employee-etl-pipeline/
+├── docker-compose.yml          # Run all services (Airflow, MySQL, Streamlit)
 ├── data/
-│   └── employees.csv           ← raw dataset (30 rows, all required columns)
-│
+│   └── employees.csv           # Raw dataset
 ├── sql/
-│   └── init.sql                ← creates employee_db + employees table (auto-run by MySQL)
-│
+│   └── init.sql                # Database initialization
 ├── dags/
-│   └── employee_etl_dag.py     ← Airflow DAG: extract → transform → validate → load
-│
-└── streamlit_app/
-    ├── Dockerfile
-    ├── requirements.txt
-    └── app.py                  ← Streamlit UI with filters, charts, table
+│   └── employee_etl_dag.py     # Airflow DAG (ETL pipeline)
+├── streamlit_app/
+│   ├── app.py                  # Dashboard application
+│   └── requirements.txt
+└── README.md
 ```
 
 ---
 
-## What You Need to Change
+## ⚙️ Features
 
-| File | What to Change | Default Value |
-|------|---------------|---------------|
-| `docker-compose.yml` | `MYSQL_ROOT_PASSWORD` | `root_pass` |
-| `docker-compose.yml` | `MYSQL_USER` + `MYSQL_PASSWORD` | `etl_user` / `etl_pass` |
-| `dags/employee_etl_dag.py` | `DB_CONFIG` user/password | `etl_user` / `etl_pass` |
-| `streamlit_app/app.py` | `DB_CONFIG` user/password | `etl_user` / `etl_pass` |
-
-> **Rule:** whatever you set in `docker-compose.yml` for MySQL credentials must match exactly in the DAG and Streamlit files.
+* Automated ETL pipeline using Airflow
+* Data cleaning and transformation
+* Data validation (null checks, constraints, consistency)
+* MySQL database integration
+* Interactive dashboard with filters and charts
+* Fully containerized using Docker
 
 ---
 
-## Quick Start
+## 🚀 How to Run the Project
+
+### 1. Clone the repository
 
 ```bash
-# 1. Go into the project folder
-cd tp6_employee_etl
+git clone https://github.com/sreykhuoch04/employee-etl-pipeline.git
+cd employee-etl-pipeline
+```
 
-# 2. Start all services (first run takes ~3-5 min to download images)
+---
+
+### 2. Start all services
+
+```bash
 docker compose up --build -d
-
-# 3. Wait ~60 seconds for airflow-init to finish, then open:
-#    Airflow UI  → http://localhost:8080   (admin / admin)
-#    Streamlit   → http://localhost:8501
-#    MySQL port  → localhost:3307          (use MySQL Workbench)
 ```
 
 ---
 
-## Step-by-Step After Starting
+### 3. Access services
 
-### Step 1 – Connect MySQL Workbench
-- Host: `localhost`
-- Port: `3307`  ← note: 3307 not 3306
-- User: `etl_user`
-- Password: `etl_pass`
-- Database: `employee_db`
+* **Airflow UI** → http://localhost:8080
 
-### Step 2 – Run the Airflow DAG
-1. Open http://localhost:8080
-2. Login: `admin` / `admin`
-3. Find DAG **`employee_etl_pipeline`**
-4. Toggle it **ON** (blue switch)
-5. Click ▶️ **Trigger DAG**
-6. Watch: extract → transform → validate → load all turn green
+  * Username: `admin`
+  * Password: `admin`
 
-### Step 3 – View the Dashboard
-1. Open http://localhost:8501
-2. Use sidebar filters: City, Education, Gender, Payment Tier, Salary Range
-3. Search box filters City and Education simultaneously
-4. Download filtered results as CSV
+* **Streamlit Dashboard** → http://localhost:8501
+
+* **MySQL**
+
+  * Host: `localhost`
+  * Port: `3307`
+  * Database: `employee_db`
 
 ---
 
-## DAG Tasks Explained
+## ▶️ Running the ETL Pipeline
 
-```
-extract  →  transform  →  validate  →  load
-```
+1. Open Airflow UI
+2. Find DAG: `employee_etl_pipeline`
+3. Turn it ON
+4. Click **Trigger DAG**
+5. Monitor tasks:
 
-| Task | What it does |
-|------|-------------|
-| `extract` | Reads `employees.csv`, pushes raw JSON to XCom |
-| `transform` | Cleans nulls, fixes types, calculates `final_salary = salary + (salary × bonus% / 100)` |
-| `validate` | Checks: no nulls in critical columns, salary > 0, final_salary ≥ salary, valid payment_tier |
-| `load` | Truncates + inserts all rows into MySQL `employees` table |
+   * extract
+   * transform
+   * validate
+   * load
 
 ---
 
-## Stopping the Project
+## 🔍 DAG Tasks Explanation
+
+| Task          | Description                               |
+| ------------- | ----------------------------------------- |
+| **extract**   | Reads employee data from CSV              |
+| **transform** | Cleans data and calculates derived fields |
+| **validate**  | Ensures data quality and consistency      |
+| **load**      | Inserts processed data into MySQL         |
+
+---
+
+## 📊 Dashboard Features
+
+* Filter by:
+
+  * City
+  * Gender
+  * Education
+  * Payment Tier
+  * Salary range
+* Search functionality
+* Interactive charts
+* Export filtered data as CSV
+
+---
+
+## 🧠 Learning Outcomes
+
+* Building end-to-end ETL pipelines
+* Workflow orchestration using Airflow
+* Data validation and transformation techniques
+* Docker-based system deployment
+* Data visualization with Streamlit
+
+---
+
+## 🛑 Stopping the Project
 
 ```bash
-docker compose down          # stop containers, keep data volumes
-docker compose down -v       # stop + delete all data (full reset)
+docker compose down
+```
+
+To remove all data:
+
+```bash
+docker compose down -v
 ```
 
 ---
 
-## Note About Separate Projects
+## 📌 Notes
 
-This project has its **own `docker-compose.yml`** completely independent from any previous project. Each project in its own folder = no conflicts. If you have another project with ports like `8080` or `8501`, either:
-- Stop the other project first: `docker compose down` (in that folder)
-- Or change the ports in **this** `docker-compose.yml` (e.g., `8082:8080`, `8502:8501`)
+* Ensure MySQL credentials in `docker-compose.yml` match configuration in DAG and Streamlit files
+* Each project should run in its own environment to avoid port conflicts
+
+---
+
+## 👤 Author
+
+**Your Name**
+Data Science Student | ETL & Data Engineering
