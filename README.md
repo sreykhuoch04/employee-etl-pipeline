@@ -167,5 +167,5 @@ docker compose down -v
 
 ## 👤 Author
 
-**Your Name**
+**YORY Sreykhuoch**
 Data Science Student | ETL & Data Engineering
